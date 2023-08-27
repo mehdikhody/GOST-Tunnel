@@ -253,6 +253,27 @@ else
     log
 fi
 
+# Install gtctl
+log "Installing Gost Tunnel Control (gtctl) ..."
+
+# Download gtctl
+log "Downloading gtctl ..."
+
+if [ $ENV_MODE == "production" ]; then
+    wget -qO $GTCTL_LOCATION $GTCTL_GITHUB
+    chmod +x $GTCTL_LOCATION
+else
+    cp gtctl.sh $GTCTL_LOCATION
+    chmod +x $GTCTL_LOCATION
+fi
+
+# Check if gtctl is installed
+if [ ! -f $GTCTL_LOCATION ]; then
+    panic "gtctl installation failed"
+fi
+
+success "gtctl installed successfully"
+
 # Ask for Hostname
 while true; do
     # if hostname was passed as an argument
@@ -346,27 +367,6 @@ systemctl start gost.service
 
 success "gost service started successfully"
 log
-
-# Install gtctl
-log "Installing Gost Tunnel Control (gtctl) ..."
-
-# Download gtctl
-log "Downloading gtctl ..."
-
-if [ $ENV_MODE == "production" ]; then
-    wget -qO $GTCTL_LOCATION $GTCTL_GITHUB
-    chmod +x $GTCTL_LOCATION
-else
-    cp gtctl.sh $GTCTL_LOCATION
-    chmod +x $GTCTL_LOCATION
-fi
-
-# Check if gtctl is installed
-if [ ! -f $GTCTL_LOCATION ]; then
-    panic "gtctl installation failed"
-fi
-
-success "gtctl installed successfully"
 
 # Show gtctl help
 log

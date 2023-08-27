@@ -299,8 +299,14 @@ if [ "$1" == "uninstall" ]; then
 fi
 
 if [ "$1" == "update" ]; then
+    service=$(cat $GOST_SERVICE)
+    Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
+    Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
+
     if [ -f $GOST_SERVICE ]; then
         systemctl stop gost.service
+        systemctl disable gost.service
+        rm -f $GOST_SERVICE
     fi
 
     if [ -f $GOST_LOCATION ]; then
@@ -311,11 +317,11 @@ if [ "$1" == "update" ]; then
         rm -f $GTCTL_LOCATION
     fi
 
-    service=$(cat $GOST_SERVICE)
-    Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
-    Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
-
-    eval $INSTALLER $Hostname $Ports
+    if [ $ENV_MODE == "production" ]; then
+        $INSTALLER $Hostname $Ports
+    else
+        bash install.sh $Hostname $Ports
+    fi
 
     log
     exit 0
