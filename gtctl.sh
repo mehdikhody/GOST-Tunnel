@@ -83,11 +83,6 @@ On_IWhite='\033[0;107m'  # White
 
 panic() {
     echo -e "${BIRed}Panic: $1${Plain}"
-
-    if [ $ENV_MODE == "production" ]; then
-        rm -f $0
-    fi
-
     exit 1
 }
 

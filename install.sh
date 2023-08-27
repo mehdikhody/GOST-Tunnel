@@ -10,6 +10,7 @@ GOST_SERVICE="/etc/systemd/system/gost.service"
 
 GTCTL_GITHUB="https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/gtctl.sh"
 GTCTL_LOCATION="/usr/local/bin/gtctl"
+INSTALLER_FILE="install.sh"
 
 # Colors
 Plain='\033[0m'     # Text Reset
@@ -88,7 +89,7 @@ panic() {
     echo -e "${BIRed}Panic: $1${Plain}"
 
     if [ $ENV_MODE == "production" ]; then
-        rm -f $0
+        rm -f $INSTALLER_FILE
     fi
 
     exit 1
@@ -376,5 +377,5 @@ log
 
 # Remove the script
 if [ $ENV_MODE == "production" ]; then
-    rm -f $0
+    rm -f $INSTALLER_FILE
 fi
