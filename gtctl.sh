@@ -1,85 +1,79 @@
 #!/bin/bash
 
-# Variables
-ENV_MODE="development" # development or production
+if [ $(basename $(pwd)) == "GOST-Tunnel" ]; then
+    ENV_MODE="development"
+else
+    ENV_MODE="production"
+fi
 
 GOST_LOCATION="/usr/local/bin/gost"
 GOST_SERVICE="/etc/systemd/system/gost.service"
 GTCTL_LOCATION="/usr/local/bin/gtctl"
 INSTALLER="https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/install.sh"
 
-# Colors
-Plain='\033[0m'     # Text Reset
-Black='\033[0;30m'  # Black
-Red='\033[0;31m'    # Red
-Green='\033[0;32m'  # Green
-Yellow='\033[0;33m' # Yellow
-Blue='\033[0;34m'   # Blue
-Purple='\033[0;35m' # Purple
-Cyan='\033[0;36m'   # Cyan
-White='\033[0;37m'  # White
+Plain='\033[0m'
+Black='\033[0;30m'
+Red='\033[0;31m'
+Green='\033[0;32m'
+Yellow='\033[0;33m'
+Blue='\033[0;34m'
+Purple='\033[0;35m'
+Cyan='\033[0;36m'
+White='\033[0;37m'
 
-# Bold
-BBlack='\033[1;30m'  # Black
-BRed='\033[1;31m'    # Red
-BGreen='\033[1;32m'  # Green
-BYellow='\033[1;33m' # Yellow
-BBlue='\033[1;34m'   # Blue
-BPurple='\033[1;35m' # Purple
-BCyan='\033[1;36m'   # Cyan
-BWhite='\033[1;37m'  # White
+BBlack='\033[1;30m'
+BRed='\033[1;31m'
+BGreen='\033[1;32m'
+BYellow='\033[1;33m'
+BBlue='\033[1;34m'
+BPurple='\033[1;35m'
+BCyan='\033[1;36m'
+BWhite='\033[1;37m'
 
-# Underline
-UBlack='\033[4;30m'  # Black
-URed='\033[4;31m'    # Red
-UGreen='\033[4;32m'  # Green
-UYellow='\033[4;33m' # Yellow
-UBlue='\033[4;34m'   # Blue
-UPurple='\033[4;35m' # Purple
-UCyan='\033[4;36m'   # Cyan
-UWhite='\033[4;37m'  # White
+UBlack='\033[4;30m'
+URed='\033[4;31m'
+UGreen='\033[4;32m'
+UYellow='\033[4;33m'
+UBlue='\033[4;34m'
+UPurple='\033[4;35m'
+UCyan='\033[4;36m'
+UWhite='\033[4;37m'
 
-# Background
-On_Black='\033[40m'  # Black
-On_Red='\033[41m'    # Red
-On_Green='\033[42m'  # Green
-On_Yellow='\033[43m' # Yellow
-On_Blue='\033[44m'   # Blue
-On_Purple='\033[45m' # Purple
-On_Cyan='\033[46m'   # Cyan
-On_White='\033[47m'  # White
+On_Black='\033[40m'
+On_Red='\033[41m'
+On_Green='\033[42m'
+On_Yellow='\033[43m'
+On_Blue='\033[44m'
+On_Purple='\033[45m'
+On_Cyan='\033[46m'
+On_White='\033[47m'
 
-# High Intensity
-IBlack='\033[0;90m'  # Black
-IRed='\033[0;91m'    # Red
-IGreen='\033[0;92m'  # Green
-IYellow='\033[0;93m' # Yellow
-IBlue='\033[0;94m'   # Blue
-IPurple='\033[0;95m' # Purple
-ICyan='\033[0;96m'   # Cyan
-IWhite='\033[0;97m'  # White
+IBlack='\033[0;90m'
+IRed='\033[0;91m'
+IGreen='\033[0;92m'
+IYellow='\033[0;93m'
+IBlue='\033[0;94m'
+IPurple='\033[0;95m'
+ICyan='\033[0;96m'
+IWhite='\033[0;97m'
 
-# Bold High Intensity
-BIBlack='\033[1;90m'  # Black
-BIRed='\033[1;91m'    # Red
-BIGreen='\033[1;92m'  # Green
-BIYellow='\033[1;93m' # Yellow
-BIBlue='\033[1;94m'   # Blue
-BIPurple='\033[1;95m' # Purple
-BICyan='\033[1;96m'   # Cyan
-BIWhite='\033[1;97m'  # White
+BIBlack='\033[1;90m'
+BIRed='\033[1;91m'
+BIGreen='\033[1;92m'
+BIYellow='\033[1;93m'
+BIBlue='\033[1;94m'
+BIPurple='\033[1;95m'
+BICyan='\033[1;96m'
+BIWhite='\033[1;97m'
 
-# High Intensity backgrounds
-On_IBlack='\033[0;100m'  # Black
-On_IRed='\033[0;101m'    # Red
-On_IGreen='\033[0;102m'  # Green
-On_IYellow='\033[0;103m' # Yellow
-On_IBlue='\033[0;104m'   # Blue
-On_IPurple='\033[0;105m' # Purple
-On_ICyan='\033[0;106m'   # Cyan
-On_IWhite='\033[0;107m'  # White
-
-# Helper functions
+On_IBlack='\033[0;100m'
+On_IRed='\033[0;101m'
+On_IGreen='\033[0;102m'
+On_IYellow='\033[0;103m'
+On_IBlue='\033[0;104m'
+On_IPurple='\033[0;105m'
+On_ICyan='\033[0;106m'
+On_IWhite='\033[0;107m'
 
 panic() {
     echo -e "${BIRed}Panic: $1${Plain}"
@@ -115,17 +109,19 @@ input() {
     read $2
 }
 
-# Check if the script is running on a supported OS
+if [ $ENV_MODE == "development" ]; then
+    warning "Running in development mode"
+    log
+fi
+
 if [ ! -f /etc/os-release ]; then
     panic "This script must be run on a supported OS"
 fi
 
-# Check if the script is running as root
 if [ "$EUID" -ne 0 ]; then
     panic "This script must be run as root"
 fi
 
-# Check if the script is running on a supported CPU architecture
 case $(uname -m) in
 x86_64 | x64 | amd64)
     arhc="amd64"
@@ -138,7 +134,6 @@ armv8 | arm64 | aarch64)
     ;;
 esac
 
-# Check if the script is running on a supported OS
 os_release=""
 
 if [ -f /etc/os-release ]; then
@@ -151,7 +146,6 @@ else
     panic "This script must be run on a supported OS"
 fi
 
-# Check if the script is running on a supported OS version
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
 case $os_release in
@@ -176,7 +170,6 @@ debian)
     fi
     ;;
 arch)
-    # Do nothing
     os_release="arch"
     ;;
 *)
@@ -188,8 +181,6 @@ if [ ! -f $GOST_LOCATION ]; then
     warning "Gost is not installed"
 fi
 
-# Help command
-# if $1 was help or no $1
 if [ "$1" == "help" ] || [ -z "$1" ]; then
     pair "Usage" "gtctl [command]"
     info ""
@@ -207,14 +198,12 @@ if [ "$1" == "help" ] || [ -z "$1" ]; then
     exit 0
 fi
 
-# Info command
 if [ "$1" == "info" ]; then
     if [ ! -f $GOST_SERVICE ]; then
         panic "gost service file not found"
     fi
 
     info "Current config info:"
-    # get info out of gost.service file
     service=$(cat $GOST_SERVICE)
     Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
     Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
@@ -300,16 +289,10 @@ if [ "$1" == "update" ]; then
 
     if [ -f $GOST_SERVICE ]; then
         systemctl stop gost.service
-        systemctl disable gost.service
-        rm -f $GOST_SERVICE
     fi
 
     if [ -f $GOST_LOCATION ]; then
         rm -f $GOST_LOCATION
-    fi
-
-    if [ -f $GTCTL_LOCATION ]; then
-        rm -f $GTCTL_LOCATION
     fi
 
     if [ $ENV_MODE == "production" ]; then
