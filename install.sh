@@ -324,6 +324,11 @@ while true; do
         continue
     fi
 
+    if [ ! -z $2 ]; then
+        pair "Ports" "$ports"
+        log
+    fi
+
     break
 done
 
