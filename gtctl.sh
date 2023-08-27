@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-ENV_MODE="development" # development or production
+ENV_MODE="production" # development or production
 
 GOST_LOCATION="/usr/local/bin/gost"
 GOST_SERVICE="/etc/systemd/system/gost.service"

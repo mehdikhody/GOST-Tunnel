@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-ENV_MODE="development" # development or production
+ENV_MODE="production" # development or production
 
 GOST_VERSION="2.11.5"
 GOST_GITHUB="https://github.com/ginuerzh/gost/releases/download"
