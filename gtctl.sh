@@ -6,7 +6,7 @@ ENV_MODE="production" # development or production
 GOST_LOCATION="/usr/local/bin/gost"
 GOST_SERVICE="/etc/systemd/system/gost.service"
 GTCTL_LOCATION="/usr/local/bin/gtctl"
-INSTALLER="bash <(curl -Ls https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/install.sh)"
+INSTALLER="https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/install.sh"
 
 # Colors
 Plain='\033[0m'     # Text Reset
@@ -318,7 +318,7 @@ if [ "$1" == "update" ]; then
     fi
 
     if [ $ENV_MODE == "production" ]; then
-        $INSTALLER $Hostname $Ports
+        bash <(curl -Ls $INSTALLER) $Hostname $Ports
     else
         bash install.sh $Hostname $Ports
     fi
