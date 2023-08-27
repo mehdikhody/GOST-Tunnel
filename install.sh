@@ -89,7 +89,9 @@ panic() {
     echo -e "${BIRed}Panic: $1${Plain}"
 
     if [ $ENV_MODE == "production" ]; then
-        rm -f $INSTALLER_FILE
+        if [ -f $INSTALLER_FILE ]; then
+            rm -f $INSTALLER_FILE
+        fi
     fi
 
     exit 1
@@ -377,5 +379,7 @@ log
 
 # Remove the script
 if [ $ENV_MODE == "production" ]; then
-    rm -f $INSTALLER_FILE
+    if [ -f $INSTALLER_FILE ]; then
+        rm -f $INSTALLER_FILE
+    fi
 fi
