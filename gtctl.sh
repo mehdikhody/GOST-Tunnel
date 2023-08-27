@@ -267,6 +267,7 @@ if [ "$1" == "uninstall" ]; then
         systemctl stop gost.service
         systemctl disable gost.service
         rm -f $GOST_SERVICE
+        systemctl daemon-reload
     fi
 
     if [ -f $GOST_LOCATION ]; then
@@ -289,6 +290,7 @@ if [ "$1" == "update" ]; then
 
     if [ -f $GOST_SERVICE ]; then
         systemctl stop gost.service
+        systemctl daemon-reload
     fi
 
     if [ -f $GOST_LOCATION ]; then
