@@ -343,6 +343,10 @@ for port in $ports; do
     gost_args+="-L=tcp://:$port/$hostname:$port"
 done
 
+systemctl stop gost.service &>/dev/null
+systemctl disable gost.service &>/dev/null
+systemctl daemon-reload &>/dev/null
+
 cat >$GOST_SERVICE <<EOF
 [Unit]
 Description=Gost Tunnel
