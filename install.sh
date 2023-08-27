@@ -255,11 +255,21 @@ fi
 
 # Ask for Hostname
 while true; do
-    input "Etern your targeted Hostname: " hostname
+    # if hostname was passed as an argument
+    if [ ! -z $1 ]; then
+        hostname=$1
+    else
+        input "Etern your targeted Hostname: " hostname
+    fi
 
     if [ -z $hostname ]; then
         error "Hostname cannot be empty"
         log
+
+        if [ ! -z $1 ]; then
+            exit 1
+        fi
+
         continue
     fi
 
@@ -280,11 +290,21 @@ done
 
 # Ask for Ports to forward
 while true; do
-    input "Enter the ports to forward (space separated): " ports
+    # if ports was passed as an argument
+    if [ ! -z $2 ]; then
+        ports=$2
+    else
+        input "Enter the ports to forward (space separated): " ports
+    fi
 
     if [ -z "$ports" ]; then
         error "Ports cannot be empty"
         log
+
+        if [ ! -z $2 ]; then
+            exit 1
+        fi
+
         continue
     fi
 

@@ -6,6 +6,7 @@ ENV_MODE="development" # development or production
 GOST_LOCATION="/usr/local/bin/gost"
 GOST_SERVICE="/etc/systemd/system/gost.service"
 GTCTL_LOCATION="/usr/local/bin/gtctl"
+INSTALLER="bash <(curl -Ls https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/install.sh)"
 
 # Colors
 Plain='\033[0m'     # Text Reset
@@ -204,6 +205,7 @@ if [ "$1" == "help" ] || [ -z "$1" ]; then
     info "  restart     ${Plain}Restart gost"
     info "  status      ${Plain}Show gost status"
     info "  uninstall   ${Plain}Uninstall everything"
+    info "  update      ${Plain}Update everything"
     info "  help        ${Plain}Show this help message"
 
     log
@@ -212,12 +214,15 @@ fi
 
 # Info command
 if [ "$1" == "info" ]; then
-    info "Current config info:"
+    if [ ! -f $GOST_SERVICE ]; then
+        panic "gost service file not found"
+    fi
 
+    info "Current config info:"
     # get info out of gost.service file
     service=$(cat $GOST_SERVICE)
     Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
-    Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g')
+    Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
 
     pair "Hostname" "$Hostname"
     pair "Ports" "$Ports"
@@ -289,6 +294,29 @@ if [ "$1" == "uninstall" ]; then
     fi
 
     success "uninstalled successfully"
+    log
+    exit 0
+fi
+
+if [ "$1" == "update" ]; then
+    if [ -f $GOST_SERVICE ]; then
+        systemctl stop gost.service
+    fi
+
+    if [ -f $GOST_LOCATION ]; then
+        rm -f $GOST_LOCATION
+    fi
+
+    if [ -f $GTCTL_LOCATION ]; then
+        rm -f $GTCTL_LOCATION
+    fi
+
+    service=$(cat $GOST_SERVICE)
+    Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
+    Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
+
+    eval $INSTALLER $Hostname $Ports
+
     log
     exit 0
 fi

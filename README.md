@@ -2,14 +2,29 @@
 
 Tunnel your server via GOST
 
-# Setup
+# Install
 
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/setup.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/install.sh)
 ```
 
-# TEST
+# Update
 
 ```bash
-bash <(curl -Ls /mnt/c/Dev/GOST-Tunnel/GOST-Tunnel/setup.sh)
+sudo gtctl update
+```
+
+# Start / Stop / Restart / Status
+
+```bash
+sudo gtcl start
+sudo gtcl stop
+sudo gtcl restat
+sudo gtcl status
+```
+
+# Uninstall
+
+```bash
+sudo gtctl uninstall
 ```
