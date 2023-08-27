@@ -81,33 +81,109 @@ On_IWhite='\033[0;107m'  # White
 # Helper functions
 
 panic() {
-    error "$1"
+    echo -e "${BIRed}Panic: $1${Plain}"
 
     if [ $ENV_MODE == "production" ]; then
         rm -f $0
     fi
 
-    exit $1
+    exit 1
 }
 
 error() {
-    echo -e "${BIRed}Error: $1${Plain}"
+    echo -e "${BIRed}$1${Plain}"
 }
 
 warning() {
-    echo -e "${BIYellow}Warning: $1${Plain}"
+    echo -e "${BIYellow}$1${Plain}"
+}
+
+log() {
+    echo -e "${IWhite}$1${Plain}"
 }
 
 info() {
-    echo -e "${BIYellow}Info: $1${Plain}"
+    echo -e "${BIBlue}$1${Plain}"
 }
 
 success() {
-    echo -e "${BIGreen}Success: $1${Plain}"
+    echo -e "${BIGreen}$1${Plain}"
 }
 
-error "This script is not ready yet"
-warning "This script is not ready yet"
-info "This script is not ready yet"
-success "This script is not ready yet"
-panic "This script is not ready yet"
+pair() {
+    echo -e "${BIBlue}$1: ${IWhite}$2${Plain}"
+}
+
+input() {
+    echo -e -n "${BIWhite}$1${Plain}"
+    read $2
+}
+
+# Check if the script is running on a supported OS
+if [ ! -f /etc/os-release ]; then
+    panic "This script must be run on a supported OS"
+fi
+
+# Check if the script is running as root
+if [ "$EUID" -ne 0 ]; then
+    panic "This script must be run as root"
+fi
+
+# Check if the script is running on a supported CPU architecture
+case $(uname -m) in
+x86_64 | x64 | amd64)
+    arhc="amd64"
+    ;;
+armv8 | arm64 | aarch64)
+    arhc="armv8"
+    ;;
+*)
+    panic "This script must be run on a supported CPU architecture"
+    ;;
+esac
+
+# Check if the script is running on a supported OS
+os_release=""
+
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    os_release=$ID
+elif [ -f /usr/lib/os-release ]; then
+    source /usr/lib/os-release
+    os_release=$ID
+else
+    panic "This script must be run on a supported OS"
+fi
+
+# Check if the script is running on a supported OS version
+os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
+
+case $os_release in
+ubuntu)
+    if [ $os_version -lt 20 ]; then
+        panic "This script must be run on a Ubuntu 20.04 or higher"
+    fi
+    ;;
+centos)
+    if [ $os_version -lt 8 ]; then
+        panic "This script must be run on a CentOS 8 or higher"
+    fi
+    ;;
+fedora)
+    if [ $os_version -lt 36 ]; then
+        panic "This script must be run on a Fedora 36 or higher"
+    fi
+    ;;
+debian)
+    if [ $os_version -lt 10 ]; then
+        panic "This script must be run on a Debian 10 or higher"
+    fi
+    ;;
+arch)
+    # Do nothing
+    os_release="arch"
+    ;;
+*)
+    panic "This script must be run on a supported OS"
+    ;;
+esac
