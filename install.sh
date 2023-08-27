@@ -6,6 +6,7 @@ ENV_MODE="development" # development or production
 GOST_VERSION="2.11.5"
 GOST_GITHUB="https://github.com/ginuerzh/gost/releases/download"
 GOST_LOCATION="/usr/local/bin/gost"
+GOST_SERVICE="/etc/systemd/system/gost.service"
 
 GTCTL_GITHUB="https://raw.githubusercontent.com/mehdikhody/GOST-Tunnel/master/gtctl.sh"
 GTCTL_LOCATION="/usr/local/bin/gtctl"
@@ -302,7 +303,7 @@ for port in $ports; do
     gost_args+="-L=tcp://:$port/$hostname:$port"
 done
 
-cat >/etc/systemd/system/gost.service <<EOF
+cat >$GOST_SERVICE <<EOF
 [Unit]
 Description=Gost Tunnel
 After=network.target
@@ -331,8 +332,14 @@ log "Installing Gost Tunnel Control (gtctl) ..."
 
 # Download gtctl
 log "Downloading gtctl ..."
-wget -qO $GTCTL_LOCATION $GTCTL_GITHUB
-chmod +x $GTCTL_LOCATION
+
+if [ $ENV_MODE == "production" ]; then
+    wget -qO $GTCTL_LOCATION $GTCTL_GITHUB
+    chmod +x $GTCTL_LOCATION
+else
+    cp gtctl.sh $GTCTL_LOCATION
+    chmod +x $GTCTL_LOCATION
+fi
 
 # Check if gtctl is installed
 if [ ! -f $GTCTL_LOCATION ]; then
@@ -343,7 +350,7 @@ success "gtctl installed successfully"
 
 # Show gtctl help
 log
-$GTCTL_LOCATION -h
+$GTCTL_LOCATION help
 log
 
 # Remove the script

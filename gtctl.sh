@@ -3,9 +3,9 @@
 # Variables
 ENV_MODE="development" # development or production
 
-GOST_VERSION="2.11.5"
-GOST_GITHUB="https://github.com/ginuerzh/gost/releases/download"
 GOST_LOCATION="/usr/local/bin/gost"
+GOST_SERVICE="/etc/systemd/system/gost.service"
+GTCTL_LOCATION="/usr/local/bin/gtctl"
 
 # Colors
 Plain='\033[0m'     # Text Reset
@@ -187,3 +187,108 @@ arch)
     panic "This script must be run on a supported OS"
     ;;
 esac
+
+if [ ! -f $GOST_LOCATION ]; then
+    warning "Gost is not installed"
+fi
+
+# Help command
+# if $1 was help or no $1
+if [ "$1" == "help" ] || [ -z "$1" ]; then
+    pair "Usage" "gtctl [command]"
+    info ""
+    info "Commands:"
+    info "  info        ${Plain}Show current config info"
+    info "  start       ${Plain}Start gost"
+    info "  stop        ${Plain}Stop gost"
+    info "  restart     ${Plain}Restart gost"
+    info "  status      ${Plain}Show gost status"
+    info "  uninstall   ${Plain}Uninstall everything"
+    info "  help        ${Plain}Show this help message"
+
+    log
+    exit 0
+fi
+
+# Info command
+if [ "$1" == "info" ]; then
+    info "Current config info:"
+
+    # get info out of gost.service file
+    service=$(cat $GOST_SERVICE)
+    Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
+    Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g')
+
+    pair "Hostname" "$Hostname"
+    pair "Ports" "$Ports"
+
+    log
+    exit 0
+fi
+
+if [ "$1" == "start" ]; then
+    if [ -f $GOST_SERVICE ]; then
+        systemctl start gost.service
+        success "gost started successfully"
+    else
+        panic "gost service file not found"
+    fi
+
+    log
+    exit 0
+fi
+
+if [ "$1" == "stop" ]; then
+    if [ -f $GOST_SERVICE ]; then
+        systemctl stop gost.service
+        success "gost stopped successfully"
+    else
+        panic "gost service file not found"
+    fi
+
+    log
+    exit 0
+fi
+
+if [ "$1" == "restart" ]; then
+    if [ -f $GOST_SERVICE ]; then
+        systemctl restart gost.service
+        success "gost restarted successfully"
+    else
+        panic "gost service file not found"
+    fi
+
+    log
+    exit 0
+fi
+
+if [ "$1" == "status" ]; then
+    if [ -f $GOST_SERVICE ]; then
+        systemctl status gost.service
+    else
+        panic "gost service file not found"
+    fi
+
+    log
+    exit 0
+fi
+
+if [ "$1" == "uninstall" ]; then
+    if [ -f $GOST_SERVICE ]; then
+        systemctl stop gost.service
+        systemctl disable gost.service
+        rm -f $GOST_SERVICE
+    fi
+
+    if [ -f $GOST_LOCATION ]; then
+        rm -f $GOST_LOCATION
+    fi
+
+    if [ -f $GTCTL_LOCATION ]; then
+        rm -f $GTCTL_LOCATION
+    fi
+
+    success "uninstalled successfully"
+    log
+    exit 0
+fi
