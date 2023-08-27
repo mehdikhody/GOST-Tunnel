@@ -92,7 +92,6 @@ panic() {
 
 error() {
     echo -e "${BIRed}Error: $1${Plain}"
-    exit 1
 }
 
 warning() {
