@@ -273,6 +273,7 @@ if [ ! -f $GTCTL_LOCATION ]; then
 fi
 
 success "gtctl installed successfully"
+log
 
 # Ask for Hostname
 while true; do
