@@ -218,6 +218,7 @@ fi
 if [ "$1" == "start" ]; then
     if [ -f $GOST_SERVICE ]; then
         systemctl start gost.service
+        systemctl daemon-reload
         success "gost started successfully"
     else
         panic "gost service file not found"
@@ -230,6 +231,7 @@ fi
 if [ "$1" == "stop" ]; then
     if [ -f $GOST_SERVICE ]; then
         systemctl stop gost.service
+        systemctl daemon-reload
         success "gost stopped successfully"
     else
         panic "gost service file not found"
@@ -242,6 +244,7 @@ fi
 if [ "$1" == "restart" ]; then
     if [ -f $GOST_SERVICE ]; then
         systemctl restart gost.service
+        systemctl daemon-reload
         success "gost restarted successfully"
     else
         panic "gost service file not found"
