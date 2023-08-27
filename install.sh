@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-ENV_MODE="production" # development or production
+ENV_MODE="development" # development or production
 
 GOST_VERSION="2.11.5"
 GOST_GITHUB="https://github.com/ginuerzh/gost/releases/download"
@@ -315,9 +315,20 @@ done
 
 # Ask for Ports to forward
 while true; do
-    # if ports was passed as an argument
+
     if [ ! -z $2 ]; then
-        ports=$2
+        ports=""
+        for port in $@; do
+            if ! [[ $port =~ ^[0-9]+$ ]]; then
+                continue
+            fi
+
+            if [ ! -z "$ports" ]; then
+                ports+=" "
+            fi
+
+            ports+="$port"
+        done
     else
         input "Enter the ports to forward (space separated): " ports
     fi
