@@ -356,7 +356,7 @@ After=network.target
 Type=simple
 Restart=always
 RestartSec=5
-ExecStart=$GOST_LOCATION $gost_args forward+ssh://$hostname:2222
+ExecStart=$GOST_LOCATION $gost_args -F forward+ssh://$hostname:2222
 
 [Install]
 WantedBy=multi-user.target
