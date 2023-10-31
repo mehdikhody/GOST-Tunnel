@@ -208,6 +208,9 @@ if [ "$1" == "info" ]; then
     Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
     Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
 
+    # remove port 2222 from ports
+    Ports=$(echo $Ports | sed 's/2222//g')
+
     pair "Hostname" "$Hostname"
     pair "Ports" "$Ports"
 
@@ -290,6 +293,9 @@ if [ "$1" == "update" ]; then
     service=$(cat $GOST_SERVICE)
     Hostname=$(echo $service | cut -d ':' -f 3 | cut -d '/' -f 2)
     Ports=$(echo $service | grep -Eo ':[0-9\.]+' | awk '!seen[$0]++' | sed ':a;N;$!ba;s/\n/ /g' | sed 's/[\:]*//g')
+
+    # remove port 2222 from ports
+    Ports=$(echo $Ports | sed 's/2222//g')
 
     if [ -f $GOST_SERVICE ]; then
         systemctl stop gost.service
