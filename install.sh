@@ -343,12 +343,6 @@ for port in $ports; do
     gost_args+="-L=tcp://:$port/$hostname:$port"
 done
 
-input "Use SSH tunnel? [y/N]: " use_ssh
-
-if [$use_ssh == "y" || $use_ssh == "Y"]; then
-    gost_args+=" forward+ssh://$hostname:2222"
-fi
-
 systemctl stop gost.service &>/dev/null
 systemctl disable gost.service &>/dev/null
 systemctl daemon-reload &>/dev/null
@@ -362,7 +356,7 @@ After=network.target
 Type=simple
 Restart=always
 RestartSec=5
-ExecStart=$GOST_LOCATION $gost_args
+ExecStart=$GOST_LOCATION $gost_args forward+ssh://$hostname:2222
 
 [Install]
 WantedBy=multi-user.target
