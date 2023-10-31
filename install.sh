@@ -345,7 +345,7 @@ done
 
 input "Use SSH tunnel? [y/N]: " use_ssh
 
-if ["$use_ssh" == "y" || "$use_ssh" == "Y"]; then
+if [$use_ssh == "y" || $use_ssh == "Y"]; then
     gost_args+=" forward+ssh://$hostname:2222"
 fi
 
