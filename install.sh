@@ -343,6 +343,8 @@ for port in $ports; do
     gost_args+="-L=tcp://:$port/$hostname:$port"
 done
 
+##  -F forward+ssh://$hostname:2222
+
 systemctl stop gost.service &>/dev/null
 systemctl disable gost.service &>/dev/null
 systemctl daemon-reload &>/dev/null
@@ -356,7 +358,7 @@ After=network.target
 Type=simple
 Restart=always
 RestartSec=5
-ExecStart=$GOST_LOCATION $gost_args -F forward+ssh://$hostname:2222
+ExecStart=$GOST_LOCATION $gost_args
 
 [Install]
 WantedBy=multi-user.target
